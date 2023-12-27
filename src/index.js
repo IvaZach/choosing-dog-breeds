@@ -4,12 +4,10 @@ import { App } from 'App';
 import { ThemeProvider } from 'styled-components';
 import './index.css';
 
-
 const theme = {
   colors: {
     black: '#212121',
     white: '#ffffff',
-    accent: 'orangered',
     error: '#ff0000',
   },
   radii: {
@@ -17,11 +15,11 @@ const theme = {
     md: '4px',
     lg: '8px',
   },
-}
+};
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-     <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <App />
     </ThemeProvider>
   </React.StrictMode>

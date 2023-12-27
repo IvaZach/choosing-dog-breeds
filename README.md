@@ -1,3 +1,3 @@
-# goit-react-hw-03-image-finder
+# choosing-dog-breeds
 
-Image Search.
+
