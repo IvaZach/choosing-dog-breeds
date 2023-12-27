@@ -1,109 +1,42 @@
+import { fetchDogByBreed } from 'api';
+import { BreedSelect } from 'components/BreedSelect/BreedSelect';
+import { GlobalStyle } from 'components/GlobalStyle';
+import { Layout } from 'components/Layout';
+import { HTTP_ERROR_MSG } from 'constants';
+import { DogDetails } from 'DogDetails';
+import { DogSkeleton } from 'DogSkeleton';
+import { ErrorMessage } from 'ErrorMessage';
 import React, { Component } from 'react';
-import css from './App.module.css';
-import Notiflix from 'notiflix';
-import { Section } from 'components/Section/Section';
-import { Loader } from 'components/Loader/Loader';
-import { Modal } from 'components/Modal/Modal';
-import { pixabayCard } from 'services/api';
-import { Button } from 'components/Button/Button';
-import { ImageGallery } from 'components/ImageGallery/ImageGallery';
-import { Searchbar } from 'components/Searchbar/Searchbar';
+
 export class App extends Component {
   state = {
-    searchCards: [],
-    searchWord: '',
-    page: 1,
-    isLoading: false,
-    isShowModal: false,
-    largeImageURL: '',
+    dog: null,
+    loading: false,
+    error: '',
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { searchWord, page } = this.state;
-    console.log('searchWord', searchWord);
-    console.log('page', page);
-
-    if (prevState.searchWord !== searchWord) {
-      this.setState({ isLoading: true });
-
-      await pixabayCard(searchWord, page)
-        .then(searchCards =>
-          this.setState({
-            searchCards: searchCards,
-            isLoading: false,
-          })
-        )
-        .catch(error => {
-          Notiflix.Notify.failure('Something wrong. Try later');
-          console.log(error);
-        });
+  fetchDog = async breedId => {
+    try {
+      this.setState({ loading: true, error: null });
+      const fetchedDog = await fetchDogByBreed(breedId);
+      this.setState({ dog: fetchedDog });
+    } catch (error) {
+      this.setState({ error: HTTP_ERROR_MSG });
+    } finally {
+      this.setState({ loading: false });
     }
-
-    if (prevState.page !== page && page !== 1) {
-      this.setState({ isLoading: true });
-
-      await pixabayCard(searchWord, page)
-        .then(searchCards => {
-          this.setState(prevState => ({
-            searchCards: [...prevState.searchCards, ...searchCards],
-            isLoading: false,
-          }));
-        })
-        .catch(error => {
-          Notiflix.Notify.failure('Something wrong. Try later');
-          console.log(error);
-        });
-    }
-  }
-
-  handleFormSubmit = newSearchWord => {
-    this.setState({ searchCards: [], searchWord: newSearchWord, page: 1 });
-  };
-
-  handleClickMore = () => {
-    this.setState({ page: this.state.page + 1 });
-  };
-
-  showModal = () => {
-    this.setState({ isShowModal: true });
-  };
-
-  closeModal = () => {
-    this.setState({ isShowModal: false });
-  };
-
-  onLargeImage = (id, img, tags) => {
-    this.setState({ largeImageURL: { id: id, img: img, tags: tags } });
   };
 
   render() {
-    const { isLoading, isShowModal, largeImageURL, searchCards, searchWord } =
-      this.state;
-
+    const { dog, error, loading } = this.state;
     return (
-      <Section className={css.App}>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-
-        {searchWord !== '' && (
-          <ImageGallery
-            onShowModal={this.showModal}
-            searchCards={searchCards}
-            handleClickMore={this.handleClickMore}
-            onLargeImage={this.onLargeImage}
-            onLoading={isLoading}
-          />
-        )}
-
-        {isLoading && <Loader />}
-
-        {!isLoading && searchCards.length > 0 && (
-          <Button onClick={this.handleClickMore} />
-        )}
-
-        {isShowModal && (
-          <Modal onCloseModal={this.closeModal} onLargeImage={largeImageURL} />
-        )}
-      </Section>
+      <Layout>
+        <BreedSelect onSelect={this.fetchDog} />
+        {dog && !loading && <DogDetails dog={dog} />}
+        {loading && <DogSkeleton/>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <GlobalStyle />
+      </Layout>
     );
   }
 }
