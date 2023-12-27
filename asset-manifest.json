@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/choosing-dog-breeds/static/css/main.f9b0be5b.css",
+    "main.js": "/choosing-dog-breeds/static/js/main.46888b18.js",
+    "index.html": "/choosing-dog-breeds/index.html",
+    "main.f9b0be5b.css.map": "/choosing-dog-breeds/static/css/main.f9b0be5b.css.map",
+    "main.46888b18.js.map": "/choosing-dog-breeds/static/js/main.46888b18.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f9b0be5b.css",
+    "static/js/main.46888b18.js"
+  ]
+}
